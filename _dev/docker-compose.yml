@@ -1,0 +1,57 @@
+version: '3.5'
+
+networks:
+  dev-network:
+    driver: bridge
+    name: dev-network
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16
+
+services:
+  tomcat:
+    build: tomcat/.
+    image: st-tomcat:8.5.38
+    container_name: dev-tomcat
+    restart: always
+    networks:
+      dev-network:
+        ipv4_address: 172.18.0.2
+    ports:
+      - 8080:8080
+    expose:
+      - "8009"
+    volumes:
+      - /home/${USER}/data/tomcat/conf:/usr/local/tomcat/conf
+      - /home/${USER}/data/tomcat/logs:/usr/local/tomcat/logs
+      - /home/${USER}/data/tomcat/webapps:/usr/local/tomcat/webapps
+  httpd:
+    build: httpd/.
+    image: st-httpd:2.4.38
+    container_name: dev-httpd
+    restart: always
+    networks:
+      dev-network:
+        ipv4_address: 172.18.0.3
+    ports:
+      - 80:80
+    volumes:
+      - /home/${USER}/data/apache/conf/apache2.conf:/etc/apache2/apache2.conf
+      - /home/${USER}/data/apache/conf/000-default.conf:/etc/apache2/sites-enabled/000-default.conf
+      - /home/${USER}/data/apache/conf/workers.properties:/etc/libapache2-mod-jk/workers.properties
+      - /home/${USER}/data/apache/conf/jk.conf:/etc/apache2/mods-available/jk.conf
+      - /home/${USER}/data/apache/logs:/var/log/apache2
+      - /home/${USER}/data/apache/html:/var/www/html
+  mariadb:
+    image: mariadb:10.2.14
+    container_name: dev-mariadb
+    restart: always
+    networks:
+      dev-network:
+        ipv4_address: 172.18.0.4
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+    volumes:
+      - /home/${USER}/data/mariadb:/var/lib/mysql
