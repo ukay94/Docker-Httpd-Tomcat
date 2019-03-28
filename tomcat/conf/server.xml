@@ -160,7 +160,7 @@
         <Valve className="org.apache.catalina.valves.AccessLogValve" directory="logs"
                prefix="localhost_access_log" suffix=".txt"
                pattern="%h %l %u %t &quot;%r&quot; %s %b" />
-<Context docBase="mNote" path="/mnote" reloadable="true" source="org.eclipse.jst.jee.server:mNote"/>
+<Context docBase="note" path="/note" reloadable="true" source="org.eclipse.jst.jee.server:mNote"/>
       </Host>
     </Engine>
   </Service>
